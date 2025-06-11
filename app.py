@@ -22,18 +22,22 @@ def heure():
     if not timezone:
         return f"❌ Ville inconnue : {ville}"
     
-    url = f"https://worldtimeapi.org/api/timezone/{timezone}"
+    url = f"https://timeapi.io/api/Time/current/zone?timeZone={timezone}"
     response = requests.get(url)
 
     if response.status_code != 200:
         return f"⛔ Impossible de récupérer l'heure pour {ville}."
 
     data = response.json()
-    datetime_str = data["datetime"]  # Exemple : "2025-06-11T13:27:15.370258+02:00"
-    heure = datetime_str[11:16]  # extrait "13:27"
+    heure = data.get("time")  # format "HH:mm:ss"
+
+    if not heure:
+        return "⛔ Données d'heure invalides reçues."
+
+    heure_court = heure[:5]  # Garde HH:mm
 
     ville_affichée = ville.title()
-    return f"🕒 Il est {heure} à {ville_affichée}"
+    return f"🕒 Il est {heure_court} à {ville_affichée}"
 
 if __name__ == "__main__":
     app.run()
